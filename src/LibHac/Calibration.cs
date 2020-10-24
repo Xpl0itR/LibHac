@@ -90,6 +90,11 @@ namespace LibHac
             stream.Position = 0x0;
             Magic = reader.ReadUtf8(0x4);
 
+            if (Magic != ExpectedMagic)
+            {
+                throw new InvalidMagicException(ExpectedMagic, Magic);
+            }
+
             stream.Position = 0x4;
             Version = reader.ReadInt32();
 
