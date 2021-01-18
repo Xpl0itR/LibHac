@@ -55,20 +55,25 @@ namespace LibHac
 
         public static void XorArrays(Span<byte> transformData, ReadOnlySpan<byte> xorData)
         {
+            int length = Math.Min(transformData.Length, xorData.Length);
+
             int sisdStart = 0;
             if (Vector.IsHardwareAccelerated)
             {
+                int lengthVec = length / Vector<byte>.Count;
+
                 Span<Vector<byte>> dataVec = MemoryMarshal.Cast<byte, Vector<byte>>(transformData);
                 ReadOnlySpan<Vector<byte>> xorVec = MemoryMarshal.Cast<byte, Vector<byte>>(xorData);
-                sisdStart = dataVec.Length * Vector<byte>.Count;
 
-                for (int i = 0; i < dataVec.Length; i++)
+                sisdStart = lengthVec * Vector<byte>.Count;
+
+                for (int i = 0; i < lengthVec; i++)
                 {
                     dataVec[i] ^= xorVec[i];
                 }
             }
 
-            for (int i = sisdStart; i < transformData.Length; i++)
+            for (int i = sisdStart; i < length; i++)
             {
                 transformData[i] ^= xorData[i];
             }
@@ -98,6 +103,33 @@ namespace LibHac
             for (int i = sisdStart; i < length; i++)
             {
                 output[i] = (byte)(input1[i] ^ input2[i]);
+            }
+        }
+
+        public static void XorArray(Span<byte> output, ReadOnlySpan<byte> input, byte value)
+        {
+            int length = Math.Min(output.Length, input.Length);
+
+            int sisdStart = 0;
+            if (Vector.IsHardwareAccelerated)
+            {
+                int lengthVec = length / Vector<byte>.Count;
+
+                Span<Vector<byte>> outputVec = MemoryMarshal.Cast<byte, Vector<byte>>(output);
+                ReadOnlySpan<Vector<byte>> inputVec = MemoryMarshal.Cast<byte, Vector<byte>>(input);
+                Vector<byte> valueVec = new Vector<byte>(value);
+
+                sisdStart = lengthVec * Vector<byte>.Count;
+
+                for (int i = 0; i < lengthVec; i++)
+                {
+                    outputVec[i] = inputVec[i] ^ valueVec;
+                }
+            }
+
+            for (int i = sisdStart; i < length; i++)
+            {
+                output[i] = (byte)(input[i] ^ value);
             }
         }
 
@@ -235,7 +267,7 @@ namespace LibHac
             // Return formatted number with suffix
             return readable.ToString("0.### ") + suffix;
         }
-        
+
         public static void IncrementByteArray(byte[] array)
         {
             for (int i = array.Length - 1; i >= 0; i--)
