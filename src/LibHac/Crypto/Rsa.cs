@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Security.Cryptography;
+using LibHac.Util;
 
 namespace LibHac.Crypto
 {
@@ -138,7 +139,7 @@ namespace LibHac.Crypto
                 do
                 {
                     rng.NextBytes(rndBuf);
-                    g = GetBigInteger(rndBuf);
+                    g = BigIntUtils.GetBigInteger(rndBuf);
                 }
                 while (g >= n);
 
@@ -180,38 +181,6 @@ namespace LibHac.Crypto
             return (p, q);
         }
 
-        private static BigInteger GetBigInteger(this ReadOnlySpan<byte> bytes)
-        {
-            byte[] signPadded = new byte[bytes.Length + 1];
-            bytes.CopyTo(signPadded.AsSpan(1));
-            Array.Reverse(signPadded);
-            return new BigInteger(signPadded);
-        }
-
-        private static byte[] GetBytes(this BigInteger value, int size)
-        {
-            byte[] bytes = value.ToByteArray();
-
-            if (size == -1)
-            {
-                size = bytes.Length;
-            }
-
-            if (bytes.Length > size + 1)
-            {
-                throw new InvalidOperationException($"Cannot squeeze value {value} to {size} bytes from {bytes.Length}.");
-            }
-
-            if (bytes.Length == size + 1 && bytes[bytes.Length - 1] != 0)
-            {
-                throw new InvalidOperationException($"Cannot squeeze value {value} to {size} bytes from {bytes.Length}.");
-            }
-
-            Array.Resize(ref bytes, size);
-            Array.Reverse(bytes);
-            return bytes;
-        }
-
         private static BigInteger ModInverse(BigInteger e, BigInteger n)
         {
             BigInteger r = n;
@@ -235,7 +204,7 @@ namespace LibHac.Crypto
 
             if (t < 0)
             {
-                t = t + n;
+                t += n;
             }
 
             return t;
