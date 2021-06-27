@@ -270,7 +270,7 @@ namespace LibHac.Common.Keys
             }
         }
 
-        private ref struct KvPairReaderContext
+        public ref struct KvPairReaderContext
         {
             public TextReader Reader;
             public Span<char> Buffer;
@@ -294,7 +294,7 @@ namespace LibHac.Common.Keys
             }
         }
 
-        private enum ReaderStatus
+        public enum ReaderStatus
         {
             ReadKey,
             NoKeyRead,
@@ -318,7 +318,7 @@ namespace LibHac.Common.Keys
             Error
         }
 
-        private static ReaderStatus GetKeyValuePair(ref KvPairReaderContext reader)
+        public static ReaderStatus GetKeyValuePair(ref KvPairReaderContext reader)
         {
             Span<char> buffer = reader.Buffer;
 

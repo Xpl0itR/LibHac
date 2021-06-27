@@ -12,6 +12,8 @@ namespace LibHac.Common.Keys
 {
     public class KeySet
     {
+        public const int KeyRevisionCount = 0x20;
+
         public enum Mode
         {
             Dev,
@@ -23,7 +25,6 @@ namespace LibHac.Common.Keys
         /// </summary>
         internal const int UsedKeyBlobCount = 6;
         internal const int SdCardKeyIdCount = 3;
-        internal const int KeyRevisionCount = 0x20;
 
         private AllKeys _keys;
         private Mode _mode = Mode.Prod;
